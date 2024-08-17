@@ -4,7 +4,7 @@ const WeatherBox = ({weather}) => {
     console.log("weather", weather)
   return (
     <div className='weather-box'>
-        <div>{weather && weather.name}</div>
+        <div>서울</div>
         <h2>{weather && weather.main.temp} / 230화씨</h2>
         <h3>맑은 하늘</h3>
     </div>
