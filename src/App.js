@@ -1,25 +1,35 @@
 import './App.css';
-import { useEffect, useCallback } from 'react';
+import { useEffect} from 'react';
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import WeatherButton from './component/WeatherButton';
 import WeatherBox from './component/WeatherBox';
+import ClockLoader from "react-spinners/ClockLoader"
 
 function App() {
+
   const [weather, setWeather] = useState(null);
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
+
+  const [city, setCity] = useState("")
+
+  const [loading, setLoading] = useState(false)
+
+  const cities = ['paris', 'new york', 'tokyo', 'seoul']
+
   const getCurrentLocation = () => {
+    
     navigator.geolocation.getCurrentPosition((position) => {
-      let lat = position.coords.latitude;
-      let lon = position.coords.longitude;
-      getWeather(lat, lon);
+      
+      let latitude = position.coords.latitude;
+      let longitude = position.coords.longitude;
+      console.log(latitude, longitude)
+      getWeather(latitude, longitude);
     });
   };
-  const getWeather = async (lat, lon) => {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=a346b07ac14a6b049d3b7d20d269e087`;
-
+  
+  const getWeather = async (latitude, longitude) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?&lat=${latitude}&lon=${longitude}&APPID=a346b07ac14a6b049d3b7d20d269e087&units=metric`;
+    setLoading(true)
     const response = await fetch(url);
     try {
       if (!response.ok) {
@@ -27,14 +37,53 @@ function App() {
       }
       const data = await response.json();
       setWeather(data);
+      setLoading(false)
+    } catch (error) {
+      console.log(error);
+      setLoading(false)
+    }
+    
+  };
+
+  const getWeatherByCity= async()=>{
+    const url = `https://api.openweathermap.org/data/2.5/weather?&q=${city}&APPID=a346b07ac14a6b049d3b7d20d269e087&units=metric`;
+    setLoading(true)
+    const response = await fetch(url);
+    try {
+      if (!response.ok) {
+        throw new Error(`${response.status}`);
+      }
+      const data = await response.json();
+      setWeather(data);
+      setLoading(false)
     } catch (error) {
       console.error(error);
     }
-  };
+    
+  }
+
+  const changeCity=(city)=>{
+    if(city==="current"){
+      setCity(null)
+    }else{
+      setCity(city);
+    }
+  }
+
+  useEffect(() => {
+    if(city == null){
+      getCurrentLocation();
+    }else{
+    getWeatherByCity();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city]);
+
   return (
       <div className="container">
+        <ClockLoader color="#f88c6b" loading={loading} />
         <WeatherBox weather={weather} />
-        <WeatherButton />
+        <WeatherButton cities={cities} selectedCity={city} changeCity={changeCity}/>
       </div>
   );
 }

@@ -11,6 +11,8 @@
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
+    "react-spinners": "^0.14.1",
+    "spinners": "^1.2.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
